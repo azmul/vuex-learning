@@ -1,7 +1,11 @@
 <template>
   <div class="product-list">
       <h1>Product List</h1>
-      <ul>
+      <img 
+          v-if="loading"
+          src="https://www.looktotheright.com/wp-content/uploads/2015/12/spinner.gif" 
+          alt="Spinner">
+      <ul v-else>
         <li v-for="(product,index) in products" :key="index">
           {{product.title}}
         </li>
@@ -20,14 +24,20 @@ export default {
   },
   data(){
     return{
-      products:[]
+       loading: false
+    }
+  },
+  computed:{
+    products(){
+      return this.$store.getters.availableProducts;
     }
   },
   created(){
+    this.loading = true;
     axios.get('/products').then(response=>{
       if(response.status === 200){
+        this.loading = false;
         this.$store.dispatch(STORE_PRODUCTS,response.data);
-        this.products = response.data;
       }    
     })
   }
